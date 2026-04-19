@@ -20,3 +20,15 @@ func Execute() {
 		panic(err)
 	}
 }
+
+var encryptCmd = &cobra.Command{
+	Use:   "Encrypt",
+	Short: "Encrypts a file",
+	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Println("encrypting")
+	},
+}
+
+func init() {
+	rootCmd.AddCommand(encryptCmd)
+}

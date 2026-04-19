@@ -1,5 +1,7 @@
 package main
 
-func main() {
+import "ask/cmd"
 
+func main() {
+	cmd.Execute()
 }

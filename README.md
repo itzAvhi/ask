@@ -13,9 +13,11 @@ This guide coveres everything you need to know to use this powerful tool.
 
     ```bash
     sudo pacman -S go
+    ```
     
     #Ubuntu/Debian:
-    
+
     ```bash
     sudo apt update && sudo apt install golang
+    ```
 

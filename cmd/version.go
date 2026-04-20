@@ -6,7 +6,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// You can manually update this, or use build flags to inject it
 var appVersion = "v0.1.0"
 
 var versionCmd = &cobra.Command{

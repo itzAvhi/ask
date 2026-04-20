@@ -2,7 +2,7 @@
 
 ask is a minimalistic, insanly fast CLI tool that uses AI (Groq/Llama 3) to convert natural language  querries into executable terminal commands. It has a automated setup wisard triggred upon the first querry of user. It is designed specifically for Linux.
 
-# Full Linux Setup(Sorry windows users)
+# Full Linux Setup
 
 This guide coveres everything you need to know to use this powerful tool.
 

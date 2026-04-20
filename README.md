@@ -1,40 +1,40 @@
-Ask - AI Powered Terminal Helper
+# Ask - AI Powered Terminal Helper 
 
-ask is a minimalistic, insanely fast CLI tool that uses AI (Groq/Llama 3) to convert natural language queries into executable terminal commands. It has an automated setup wizard triggered upon the first query. It is designed specifically for Linux.
-Full Linux Setup
+`ask` is a minimalistic, insanely fast CLI tool that uses AI(Groq/Llama 3) to convert natural language querries into executiable terminal commands. It features an automated wisard triggred upon the first querry and is designed specifically for Linux
 
-This guide covers everything you need to know to use this powerful tool.
-1. Install Go (The Compiler)
+---
 
-If you don't have Go installed, run the following based on your distribution:
+## Full Linux Setup
 
-Arch Linux:
-Bash
+This guide covers everything you need to know to install and use this tool globally.
 
-sudo pacman -S go
+### 1. Install Go (The compiler )
+if you dont have Go installed, Run the following command based on your distribution
 
-Ubuntu/Debian:
-Bash
+**Arch Linux**
+```bash
+    sudo pacman -S go
+```
 
-sudo apt update && sudo apt install golang
+**Ubuntu/Debian**
+```bash
+    sudo apt update && sudo apt install golang
+```
 
-Verify the installation:
-Bash
+**Verify the installation**
+```bash
+    go version
+```
 
-go version
-
-2. Clone and Build
-
+### 2.Clone and Build
 Clone the repository and compile the binary:
-Bash
-
-git clone https://github.com/itzAvhi/ask.git
-cd ask
-go build -o ask main.go
-
-3. Make it Global
-
-To run ask from any folder without typing the full path, move it to your system's binary folder:
-Bash
-
-sudo mv ask /usr/local/bin/
+```bash
+    git clone [https://github.com/itzAvhi/ask.git](https://github.com/itzAvhi/ask.git)
+    cd ask
+    go build -o ask main.go
+```
+### Make it Global
+to run `ask` from any folder without typing the full path, move it to your system's binary folder
+```bash
+    sudo mv ask /usr/local/bin/
+```

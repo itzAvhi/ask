@@ -11,6 +11,11 @@ This guide coveres everything you need to know to use this powerful tool.
 
     #Arch Linux
 
-    ```markdown
     ```bash
     sudo pacman -S go
+    
+    #Ubuntu/Debian:
+    
+    ```bash
+    sudo apt update && sudo apt install golang
+

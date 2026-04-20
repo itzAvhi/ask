@@ -29,12 +29,30 @@ if you dont have Go installed, Run the following command based on your distribut
 ### 2.Clone and Build
 Clone the repository and compile the binary:
 ```bash
-    git clone [https://github.com/itzAvhi/ask.git](https://github.com/itzAvhi/ask.git)
-    cd ask
-    go build -o ask main.go
+    git clone https://github.com/itzAvhi/ask.git && cd ask && go build -o ask main.go
 ```
 ### Make it Global
 to run `ask` from any folder without typing the full path, move it to your system's binary folder
 ```bash
     sudo mv ask /usr/local/bin/
 ```
+---
+# Configuration
+The first time you run the tool, it will automatically startup the setup
+
+### 1. Run a querry
+```bash
+   ask "command to know what is my name"
+```
+### 2. Setup
+
+The terminal will ask: `Enter Your api key: `. You will need a api key to make `ask` work. Get the free api at `https://console.groq.com/`. (*NOTE: YOU CAN ONLY PLUG IN THE GROQ API KEY, OTHERS WONT WORK*)
+
+---
+You can now sucessfully use `ask`
+
+# Usage Examples 
+- `ask "what is my local ip address"`
+- `ask "undo my last commit but keep changes"`
+
+*ProTip: ypu can use ask without typing `""` (Double inverted comma)*

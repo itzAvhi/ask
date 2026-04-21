@@ -1,3 +1,4 @@
+// ask
 package main
 
 import "ask/cmd"

@@ -21,9 +21,9 @@ Standard AI assistants don't know your environment. `ask` bridges the gap by inj
 
 ---
 
-![Ask Cli demo](/home/avhi/askdemo1)
-![Ask Cli demo](/home/avhi/askdemo2)
-![Ask Cli demo](/home/avhi/askdemo3)
+![Ask Cli demo](/home/avhi/askdemo1.png)
+![Ask Cli demo](/home/avhi/askdemo2.png)
+![Ask Cli demo](/home/avhi/askdemo3.png)
 
 
 

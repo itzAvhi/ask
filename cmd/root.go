@@ -13,37 +13,42 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type Config struct {
-	APIKey string `json:"api_key"`
-	OS     string `json:"os"`
-}
 
 var (
-	name    string
-	confirm string
-	ls string
-	pwd string
-	outb,errb bytes.Buffer
+	fileName string
+	confirm  string
 )
+
+func getOSName() string {
+	data, err := os.ReadFile("/etc/os-release")
+	if err != nil {
+		return "Linux"
+	}
+	
+	for _, line := range strings.Split(string(data), "\n") {
+		if strings.HasPrefix(line, "PRETTY_NAME=") {
+			return strings.Trim(strings.TrimPrefix(line, "PRETTY_NAME="), "\"")
+		}
+	}
+	return "Linux"
+}
 
 var rootCmd = &cobra.Command{
 	Use:   "ask [query]",
 	Short: "AI powered terminal helper",
-	Long:  "AI powered terminal helper that finds the appropriate terminal command for your requirements.",
-
-	Args: cobra.ArbitraryArgs,
+	Long:  "A context-aware CLI tool that suggests and executes commands based on your current environment.",
+	Args:  cobra.ArbitraryArgs,
 	Run: func(cmd *cobra.Command, args []string) {
-
 		query := strings.Join(args, " ")
 		if query == "" {
 			color.Yellow("Usage: ask <what you want to do>")
 			return
 		}
 
-		outputofpwd, err:= executeAndCapture("pwd")
-		if err != nil {
-			color.Red("Failed to execute 'pwd' showing result without the value of 'ls'",err)
-		}
+	
+		osName := getOSName()
+		pwd, _ := os.Getwd()
+		lsOutput, _ := executeAndCapture("ls -F")
 
 		apiKey := os.Getenv("GROQ_API_KEY")
 		if apiKey == "" {
@@ -52,94 +57,118 @@ var rootCmd = &cobra.Command{
 			return
 		}
 
+		
 		config := openai.DefaultConfig(apiKey)
 		config.BaseURL = "https://api.groq.com/openai/v1"
 		client := openai.NewClientWithConfig(config)
 
 		color.Blue("Thinking...")
 
+		
+		systemPrompt := fmt.Sprintf(
+			"You are a Linux CLI expert on %s. "+
+				"Current Path: %s | Files here: %s. "+
+				"Return ONLY the raw bash command. No markdown, no backticks, no explanations.",
+			osName, pwd, strings.TrimSpace(lsOutput),
+		)
+
 		resp, err := client.CreateChatCompletion(
 			context.Background(),
 			openai.ChatCompletionRequest{
 				Model: "llama-3.3-70b-versatile",
 				Messages: []openai.ChatCompletionMessage{
-					{
-						Role:    openai.ChatMessageRoleSystem,
-						Content: fmt.Sprintf("You are a Linux CLI expert. Return ONLY the raw command. No markdown, no backticks, no text. Just the command.You are currently in the directory %s",strings.TrimSpace(outputofpwd)),
-					},
-					{
-						Role:    openai.ChatMessageRoleUser,
-						Content: query,
-					},
+					{Role: openai.ChatMessageRoleSystem, Content: systemPrompt},
+					{Role: openai.ChatMessageRoleUser, Content: query},
 				},
 			},
 		)
 
 		if err != nil {
-			color.Red("Error: %v", err)
+			color.Red("API Error: %v", err)
 			return
 		}
 
+		
 		command := strings.TrimSpace(resp.Choices[0].Message.Content)
 		command = strings.Trim(command, "`")
 
 		color.Yellow("\nSuggested Command: ")
 		fmt.Printf("  %s\n\n", command)
 
+		
 		fmt.Print("Run this command? (y/N): ")
 		fmt.Scanln(&confirm)
 		if strings.ToLower(confirm) == "y" {
 			execute(command)
 		}
 	},
-
-	
 }
 
 func execute(command string) {
+	
+	if strings.HasPrefix(command, "cd ") {
+		target := strings.TrimSpace(strings.TrimPrefix(command, "cd "))
+		
+		if strings.HasPrefix(target, "~") {
+			home, _ := os.UserHomeDir()
+			target = strings.Replace(target, "~", home, 1)
+		}
+		err := os.Chdir(target)
+		if err != nil {
+			color.Red("Directory change failed: %v", err)
+		} else {
+			color.Green("Moved to %s", target)
+		}
+		return
+	}
+
 	c := exec.Command("bash", "-c", command)
 	c.Stdout = os.Stdout
 	c.Stderr = os.Stderr
 	c.Stdin = os.Stdin
 	err := c.Run()
+
 	if err != nil {
+
+		if exitError, ok := err.(*exec.ExitError); ok && exitError.ExitCode() == 1 {
+			return
+		}
 		color.Red("Execution failed: %v", err)
 	}
 }
 
-func executeAndCapture(command string) (string,error) {
-	c := exec.Command("bash","-c",command)
+
+func executeAndCapture(command string) (string, error) {
+	var outb bytes.Buffer
+	c := exec.Command("bash", "-c", command)
 	c.Stdout = &outb
-	c.Stderr = &errb
 	err := c.Run()
-	if err != nil {
-		color.Red("Execution failed",err)
-	}
-	return outb.String() , nil
+	return outb.String(), err
 }
+
+
 
 var encryptCmd = &cobra.Command{
 	Use:   "encrypt",
-	Short: "Encrypts a file",
+	Short: "Encrypts a file (Placeholder)",
 	Run: func(cmd *cobra.Command, args []string) {
-		if name == "" {
+		if fileName == "" {
 			color.Red("Error: Please provide a filename with -n")
 			return
 		}
-		fmt.Printf("Encrypting file: %s...\n", name)
-
+		color.Cyan("Encrypting file: %s...", fileName)
+	
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(encryptCmd)
-	encryptCmd.Flags().StringVarP(&name, "name", "n", "", "Name of the file")
-
+	encryptCmd.Flags().StringVarP(&fileName, "name", "n", "", "Name of the file to encrypt")
 }
+
 
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
 		os.Exit(1)
 	}
 }
-

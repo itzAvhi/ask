@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"os"
@@ -20,6 +21,9 @@ type Config struct {
 var (
 	name    string
 	confirm string
+	ls string
+	pwd string
+	outb,errb bytes.Buffer
 )
 
 var rootCmd = &cobra.Command{
@@ -34,6 +38,11 @@ var rootCmd = &cobra.Command{
 		if query == "" {
 			color.Yellow("Usage: ask <what you want to do>")
 			return
+		}
+
+		outputofpwd, err:= executeAndCapture("pwd")
+		if err != nil {
+			color.Red("Failed to execute 'pwd' showing result without the value of 'ls'",err)
 		}
 
 		apiKey := os.Getenv("GROQ_API_KEY")
@@ -56,7 +65,7 @@ var rootCmd = &cobra.Command{
 				Messages: []openai.ChatCompletionMessage{
 					{
 						Role:    openai.ChatMessageRoleSystem,
-						Content: "You are a Linux CLI expert. Return ONLY the raw command. No markdown, no backticks, no text. Just the command.",
+						Content: fmt.Sprintf("You are a Linux CLI expert. Return ONLY the raw command. No markdown, no backticks, no text. Just the command.You are currently in the directory %s",strings.TrimSpace(outputofpwd)),
 					},
 					{
 						Role:    openai.ChatMessageRoleUser,
@@ -77,13 +86,14 @@ var rootCmd = &cobra.Command{
 		color.Yellow("\nSuggested Command: ")
 		fmt.Printf("  %s\n\n", command)
 
-		// 5. Confirmation and Execution
 		fmt.Print("Run this command? (y/N): ")
 		fmt.Scanln(&confirm)
 		if strings.ToLower(confirm) == "y" {
 			execute(command)
 		}
 	},
+
+	
 }
 
 func execute(command string) {
@@ -95,6 +105,17 @@ func execute(command string) {
 	if err != nil {
 		color.Red("Execution failed: %v", err)
 	}
+}
+
+func executeAndCapture(command string) (string,error) {
+	c := exec.Command("bash","-c",command)
+	c.Stdout = &outb
+	c.Stderr = &errb
+	err := c.Run()
+	if err != nil {
+		color.Red("Execution failed",err)
+	}
+	return outb.String() , nil
 }
 
 var encryptCmd = &cobra.Command{
@@ -113,6 +134,7 @@ var encryptCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(encryptCmd)
 	encryptCmd.Flags().StringVarP(&name, "name", "n", "", "Name of the file")
+
 }
 
 func Execute() {
@@ -120,3 +142,4 @@ func Execute() {
 		os.Exit(1)
 	}
 }
+

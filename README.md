@@ -21,6 +21,12 @@ Standard AI assistants don't know your environment. `ask` bridges the gap by inj
 
 ---
 
+![Ask Cli demo](/home/avhi/askdemo1)
+![Ask Cli demo](/home/avhi/askdemo2)
+![Ask Cli demo](/home/avhi/askdemo3)
+
+
+
 ## Full Linux Setup
 
 This guide covers everything you need to know to install and use this tool globally.

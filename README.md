@@ -59,6 +59,10 @@ to run `ask` from any folder without typing the full path, move it to your syste
 ```bash
     sudo mv ask /usr/local/bin/
 ```
+### Then run this command(make sure you are using bash terminal.)
+```bash
+echo "export GROQ_API_KEY='your_actual_key_here'" >> ~/.bashrc
+```
 ---
 # Configuration
 The first time you run the tool, it will automatically startup the setup
@@ -79,3 +83,4 @@ You can now sucessfully use `ask`
 - `ask "undo my last commit but keep changes"`
 
 *ProTip: ypu can use ask without typing `""` (Double inverted comma)*
+*For reviewers: Sorry for the multiple update readme.md command (i had never written a readme in myself this was the first time ;))*

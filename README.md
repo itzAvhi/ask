@@ -59,9 +59,13 @@ to run `ask` from any folder without typing the full path, move it to your syste
 ```bash
     sudo mv ask /usr/local/bin/
 ```
-### Then run this command(make sure you are using bash terminal.)
+### Then run this if you use bash
 ```bash
 echo "export GROQ_API_KEY='your_actual_key_here'" >> ~/.bashrc
+```
+### OR this for zsh users
+```
+echo "export GROQ_API_KEY='your_key'" >> ~/.zshrc && source ~/.zshrc
 ```
 ---
 # Configuration

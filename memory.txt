@@ -1,0 +1,6 @@
+User: Delete the contents of memory.txt
+Ask: echo -n > memory.txt
+
+User: what is the biggest file here?
+Ask: du -h * | sort -rh | head -1
+

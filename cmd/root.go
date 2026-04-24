@@ -13,7 +13,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-
 var (
 	fileName string
 	confirm  string
@@ -24,7 +23,6 @@ func getOSName() string {
 	if err != nil {
 		return "Linux"
 	}
-	
 	for _, line := range strings.Split(string(data), "\n") {
 		if strings.HasPrefix(line, "PRETTY_NAME=") {
 			return strings.Trim(strings.TrimPrefix(line, "PRETTY_NAME="), "\"")
@@ -45,7 +43,6 @@ var rootCmd = &cobra.Command{
 			return
 		}
 
-	
 		osName := getOSName()
 		pwd, _ := os.Getwd()
 		lsOutput, _ := executeAndCapture("ls -F")
@@ -57,19 +54,29 @@ var rootCmd = &cobra.Command{
 			return
 		}
 
-		
+		memoryFile := "memory.txt"
+		var last15 string
+		if data, err := os.ReadFile(memoryFile); err == nil {
+			lines := strings.Split(string(data), "\n")
+			start := len(lines) - 15
+			if start < 0 {
+				start = 0
+			}
+			last15 = strings.Join(lines[start:], "\n")
+		}
+
 		config := openai.DefaultConfig(apiKey)
 		config.BaseURL = "https://api.groq.com/openai/v1"
 		client := openai.NewClientWithConfig(config)
 
 		color.Blue("Thinking...")
 
-		
 		systemPrompt := fmt.Sprintf(
 			"You are a Linux CLI expert on %s. "+
 				"Current Path: %s | Files here: %s. "+
+				"Past Interactions: %s. "+
 				"Return ONLY the raw bash command. No markdown, no backticks, no explanations.",
-			osName, pwd, strings.TrimSpace(lsOutput),
+			osName, pwd, strings.TrimSpace(lsOutput), last15,
 		)
 
 		resp, err := client.CreateChatCompletion(
@@ -88,27 +95,29 @@ var rootCmd = &cobra.Command{
 			return
 		}
 
-		
-		command := strings.TrimSpace(resp.Choices[0].Message.Content)
-		command = strings.Trim(command, "`")
+		suggestedCommand := strings.TrimSpace(resp.Choices[0].Message.Content)
+		suggestedCommand = strings.Trim(suggestedCommand, "`")
 
 		color.Yellow("\nSuggested Command: ")
-		fmt.Printf("  %s\n\n", command)
+		fmt.Printf("  %s\n\n", suggestedCommand)
 
-		
 		fmt.Print("Run this command? (y/N): ")
 		fmt.Scanln(&confirm)
 		if strings.ToLower(confirm) == "y" {
-			execute(command)
+			execute(suggestedCommand)
+
+			file, err := os.OpenFile(memoryFile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+			if err == nil {
+				defer file.Close()
+				fmt.Fprintf(file, "User: %s\nAsk: %s\n\n", query, suggestedCommand)
+			}
 		}
 	},
 }
 
 func execute(command string) {
-	
 	if strings.HasPrefix(command, "cd ") {
 		target := strings.TrimSpace(strings.TrimPrefix(command, "cd "))
-		
 		if strings.HasPrefix(target, "~") {
 			home, _ := os.UserHomeDir()
 			target = strings.Replace(target, "~", home, 1)
@@ -129,14 +138,12 @@ func execute(command string) {
 	err := c.Run()
 
 	if err != nil {
-
 		if exitError, ok := err.(*exec.ExitError); ok && exitError.ExitCode() == 1 {
 			return
 		}
 		color.Red("Execution failed: %v", err)
 	}
 }
-
 
 func executeAndCapture(command string) (string, error) {
 	var outb bytes.Buffer
@@ -145,8 +152,6 @@ func executeAndCapture(command string) (string, error) {
 	err := c.Run()
 	return outb.String(), err
 }
-
-
 
 var encryptCmd = &cobra.Command{
 	Use:   "encrypt",
@@ -157,7 +162,6 @@ var encryptCmd = &cobra.Command{
 			return
 		}
 		color.Cyan("Encrypting file: %s...", fileName)
-	
 	},
 }
 
@@ -165,7 +169,6 @@ func init() {
 	rootCmd.AddCommand(encryptCmd)
 	encryptCmd.Flags().StringVarP(&fileName, "name", "n", "", "Name of the file to encrypt")
 }
-
 
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {

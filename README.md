@@ -59,7 +59,7 @@ to run `ask` from any folder without typing the full path, move it to your syste
 ```bash
     sudo mv ask /usr/local/bin/
 ```
-The terminal will ask: `Enter Your api key: `. You will need a api key to make `ask` work. Get the free api at `https://console.groq.com/`. (*NOTE: YOU CAN ONLY PLUG IN THE GROQ API KEY, OTHERS WONT WORK*)
+You will need a api key to make `ask` work. Get the free api at `https://console.groq.com/`. (*NOTE: YOU CAN ONLY PLUG IN THE GROQ API KEY, OTHERS WONT WORK*)
 
 ### Then run this if you use bash
 ```bash
@@ -69,6 +69,7 @@ echo "export GROQ_API_KEY='your_actual_key_here'" >> ~/.bashrc
 ```
 echo "export GROQ_API_KEY='your_key'" >> ~/.zshrc && source ~/.zshrc
 ```
+*Note: you see 'your api key' placeholder. replace it with your acctual api key*
 ---
 # Configuration
 The first time you run the tool, it will automatically startup the setup
@@ -88,8 +89,9 @@ You can now sucessfully use `ask`
 - `ask "what is my local ip address"`
 - `ask "undo my last commit but keep changes"`
 
-[![Watch the video](https://img.youtube.com/vi/16DW1NL42JU/maxresdefault.jpg)](https://youtube.com)
+[![Ask - A terminal Buddy](https://img.youtube.com/vi/16DW1NL42JU/maxresdefault.jpg)](https://www.youtube.com/watch?v=16DW1NL42JU)
 
+[Watch the full demo of Ask - A terminal Buddy here!](https://www.youtube.com/watch?v=16DW1NL42JU)
 
 *ProTip: ypu can use ask without typing `""` (Double inverted comma)*
 *For reviewers: Sorry for the multiple update readme.md command (i had never written a readme in myself this was the first time ;))*

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"strings"
@@ -37,6 +38,47 @@ var rootCmd = &cobra.Command{
 	Long:  "A context-aware CLI tool that suggests and executes commands based on your current environment.",
 	Args:  cobra.ArbitraryArgs,
 	Run: func(cmd *cobra.Command, args []string) {
+		apiKey := os.Getenv("GROQ_API_KEY")
+
+		if apiKey == "" {
+			color.Cyan("Welcome to ask! First-time setup starting...")
+			fmt.Print("Please enter your Groq API Key: ")
+			var inputKey string
+			fmt.Scanln(&inputKey)
+
+			if inputKey == "" {
+				color.Red("Error: API Key is required.")
+				return
+			}
+
+			home, _ := os.UserHomeDir()
+			bashrcPath := home + "/.bashrc"
+			localBin := home + "/.local/bin"
+
+			os.MkdirAll(localBin, 0755)
+
+			selfPath, _ := os.Executable()
+			src, err := os.Open(selfPath)
+			if err == nil {
+				dst, err := os.OpenFile(localBin+"/ask", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0755)
+				if err == nil {
+					io.Copy(dst, src)
+					dst.Close()
+				}
+				src.Close()
+			}
+
+			configLines := fmt.Sprintf("\n# Added by ask CLI\nexport GROQ_API_KEY='%s'\nexport PATH=\"$PATH:%s\"\n", inputKey, localBin)
+			f, err := os.OpenFile(bashrcPath, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644)
+			if err == nil {
+				f.WriteString(configLines)
+				f.Close()
+				color.Green("✓ API Key saved and 'ask' installed to %s", localBin)
+				color.Yellow("Please run 'source ~/.bashrc' to finish.")
+			}
+			apiKey = inputKey
+		}
+
 		query := strings.Join(args, " ")
 		if query == "" {
 			color.Yellow("Usage: ask <what you want to do>")
@@ -46,13 +88,6 @@ var rootCmd = &cobra.Command{
 		osName := getOSName()
 		pwd, _ := os.Getwd()
 		lsOutput, _ := executeAndCapture("ls -F")
-
-		apiKey := os.Getenv("GROQ_API_KEY")
-		if apiKey == "" {
-			color.Red("Error: GROQ_API_KEY not set.")
-			color.Green("Please run: export GROQ_API_KEY='your_key'")
-			return
-		}
 
 		memoryFile := "memory.txt"
 		var last15 string

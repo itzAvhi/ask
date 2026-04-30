@@ -60,3 +60,7 @@ You can now sucessfully use `ask`
 - `ask "undo my last commit but keep changes"`
 
 *ProTip: ypu can use ask without typing `""` (Double inverted comma)*
+
+## Demo
+[![Watch the video](https://img.youtube.com/vi/16DW1NL42JU/0.jpg)](https://youtu.be/16DW1NL42JU)
+*Click the image above to watch the full demo on YouTube.*

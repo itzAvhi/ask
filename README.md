@@ -31,43 +31,24 @@ Standard AI assistants don't know your environment. `ask` bridges the gap by inj
 
 This guide covers everything you need to know to install and use this tool globally.
 
-### 1. Install Go (The compiler )
-if you dont have Go installed, Run the following command based on your distribution
+Run the commnad given below for the most easiest download.
 
-**Arch Linux**
 ```bash
-    sudo pacman -S go
-```
+    # 1. Download the binary directly from your release
+wget https://github.com/itzAvhi/ask/releases/download/v1.0.0/ask-linux-amd64
 
-**Ubuntu/Debian**
-```bash
-    sudo apt update && sudo apt install golang
-```
+# 2. Make the file executable
+chmod +x ask-linux-amd64
 
-**Verify the installation**
-```bash
-    go version
+# 3. Run the setup and first query
+./ask-linux-amd64 "how do I use this tool?"
 ```
 
-### 2.Clone and Build
-Clone the repository and compile the binary:
-```bash
-    git clone https://github.com/itzAvhi/ask.git && cd ask && go build -o ask main.go
-```
-### Make it Global
-to run `ask` from any folder without typing the full path, move it to your system's binary folder
-```bash
-    sudo mv ask /usr/local/bin/
-```
 ---
 # Configuration
 The first time you run the tool, it will automatically startup the setup
 
-### 1. Run a querry
-```bash
-   ask "command to know what is my name"
-```
-### 2. Setup
+1. Setup
 
 The terminal will ask: `Enter Your api key: `. You will need a api key to make `ask` work. Get the free api at `https://console.groq.com/`. (*NOTE: YOU CAN ONLY PLUG IN THE GROQ API KEY, OTHERS WONT WORK*)
 
